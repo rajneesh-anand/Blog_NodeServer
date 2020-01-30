@@ -3,7 +3,7 @@ const Category = require('../models/category');
 const formidable = require('formidable');
 const fs = require('fs');
 const _ = require('lodash');
-const bodyParser = require('body-parser');
+
 
 exports.postById = (req, res, next, id) => {
     Post.findById(id)

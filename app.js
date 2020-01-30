@@ -30,6 +30,7 @@ const postRoutes = require('./routes/post');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const categoryRoutes = require('./routes/category');
+const newsRoutes = require('./routes/news');
 // apiDocs
 app.get('/api', (req, res) => {
     fs.readFile('docs/apiDocs.json', (err, data) => {
@@ -53,6 +54,7 @@ app.use('/api', postRoutes);
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);
+app.use('/api', newsRoutes);
 app.use(function(err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401).json({ error: 'Unauthorized!' });
