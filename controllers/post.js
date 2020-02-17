@@ -9,6 +9,7 @@ exports.postById = (req, res, next, id) => {
 		.populate("postedBy", "_id name")
 		.populate("comments.postedBy", "_id name")
 		.populate("postedBy", "_id name role")
+		.populate("category", "_id name ")
 		.select("_id title body created likes comments photo")
 		.exec((err, post) => {
 			if (err || !post) {
