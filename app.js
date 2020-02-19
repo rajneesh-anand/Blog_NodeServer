@@ -25,6 +25,12 @@ mongoose.connection.on("error", err => {
 	console.log(`DB connection error: ${err.message}`);
 });
 
+const corsOptions = {
+	origin: "http://localhost:3000"
+};
+app.options("*", cors());
+app.use(cors(corsOptions));
+
 // bring in routes
 const postRoutes = require("./routes/post");
 const authRoutes = require("./routes/auth");
@@ -50,7 +56,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(expressValidator());
 // app.use(cors());
-app.options("*", cors());
+// app.options("*", cors());
 app.use("/api", postRoutes);
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
