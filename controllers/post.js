@@ -88,7 +88,7 @@ exports.getPosts = async (req, res) => {
 				.populate("comments.postedBy", "_id name")
 				.populate("postedBy", "_id name")
 				.populate("category", "_id name")
-				.select("_id title body created likes ")
+				.select("_id title body created likes")
 				.limit(perPage)
 				.sort({ created: -1 });
 		})
@@ -255,11 +255,16 @@ exports.deletePost = (req, res) => {
 };
 
 exports.photo = (req, res, next) => {
-	res.set("Content-Type", req.post.photo.contentType);
-	return res.send(req.post.photo.data);
+	if (req.post.photo.data) {
+		res.set("Content-Type", req.post.photo.contentType);
+		return res.send(req.post.photo.data);
+	} else {
+		return res.send("No Photo Found");
+	}
 };
 
 exports.singlePost = (req, res) => {
+	console.log(req.post);
 	return res.json(req.post);
 };
 

@@ -4,7 +4,6 @@ const {
 	createPost,
 	postsByUser,
 	postById,
-	postBySlug,
 	getPostsByCategory,
 	isPoster,
 	updatePost,
