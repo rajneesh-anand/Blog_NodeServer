@@ -11,6 +11,7 @@ exports.userById = (req, res, next, id) => {
 		// populate followers and following users array
 		.populate("following", "_id name")
 		.populate("followers", "_id name")
+
 		.exec((err, user) => {
 			if (err || !user) {
 				return res.status(400).json({
@@ -53,6 +54,7 @@ exports.allUsers = (req, res) => {
 exports.getUser = (req, res) => {
 	req.profile.hashed_password = undefined;
 	req.profile.salt = undefined;
+
 	return res.json(req.profile);
 };
 
@@ -88,7 +90,7 @@ exports.updateUser = (req, res, next) => {
 		user = _.extend(user, fields);
 
 		user.updated = Date.now();
-		// console.log("USER FORM DATA UPDATE: ", user);
+		console.log(files.photo);
 
 		if (files.photo) {
 			user.photo.data = fs.readFileSync(files.photo.path);

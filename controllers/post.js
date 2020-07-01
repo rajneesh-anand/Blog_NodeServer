@@ -14,7 +14,7 @@ exports.postById = (req, res, next, id) => {
 		.exec((err, post) => {
 			if (err || !post) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			}
 			req.post = post;
@@ -32,7 +32,7 @@ exports.postBySlug = (req, res, next, id) => {
 		.exec((err, post) => {
 			if (err || !post) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			}
 			req.post = post;
@@ -47,7 +47,7 @@ exports.postByCategory = (req, res) => {
 		.exec((err, post) => {
 			if (err || !post) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			}
 			req.post = post;
@@ -80,7 +80,7 @@ exports.getPosts = async (req, res) => {
 	const posts = await Post.find()
 		// countDocuments() gives you total count of posts
 		.countDocuments()
-		.then(count => {
+		.then((count) => {
 			totalItems = count;
 			return Post.find()
 				.skip((currentPage - 1) * perPage)
@@ -92,10 +92,10 @@ exports.getPosts = async (req, res) => {
 				.limit(perPage)
 				.sort({ created: -1 });
 		})
-		.then(posts => {
+		.then((posts) => {
 			res.status(200).json(posts);
 		})
-		.catch(err => console.log(err));
+		.catch((err) => console.log(err));
 };
 
 exports.createPost = (req, res, next) => {
@@ -104,10 +104,11 @@ exports.createPost = (req, res, next) => {
 	form.parse(req, (err, fields, files) => {
 		if (err) {
 			return res.status(400).json({
-				error: "Image could not be uploaded"
+				error: "Image could not be uploaded",
 			});
 		}
 		console.log(fields);
+		console.log(files);
 		let post = new Post(fields);
 		req.profile.hashed_password = undefined;
 		req.profile.salt = undefined;
@@ -124,10 +125,11 @@ exports.createPost = (req, res, next) => {
 		post.save((err, result) => {
 			if (err) {
 				return res.status(400).json({
-					error: err
+					error: err,
+					message: err + " FAILED",
 				});
 			}
-			res.json(result);
+			res.status(200).json({ data: result, message: "success" });
 		});
 	});
 };
@@ -140,7 +142,7 @@ exports.postsByUser = (req, res) => {
 		.exec((err, posts) => {
 			if (err) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			}
 			res.json(posts);
@@ -158,7 +160,7 @@ exports.isPoster = (req, res, next) => {
 
 	if (!isPoster) {
 		return res.status(403).json({
-			error: "User is not authorized"
+			error: "User is not authorized",
 		});
 	}
 	next();
@@ -174,13 +176,13 @@ exports.getPostsByCategory = async (req, res) => {
 	await Category.find({ slug: slug }, (err, category) => {
 		if (err) {
 			return res.status(422).json({
-				error: "Your request could not be processed. Please try again"
+				error: "Your request could not be processed. Please try again",
 			});
 		}
 		console.log(category[0]._id);
 		Post.find({ category: category[0]._id })
 			.countDocuments()
-			.then(count => {
+			.then((count) => {
 				totalItems = count;
 				return Post.find({ category: category[0]._id })
 					.skip((currentPage - 1) * perPage)
@@ -190,10 +192,10 @@ exports.getPostsByCategory = async (req, res) => {
 					.limit(perPage)
 					.sort({ created: -1 });
 			})
-			.then(posts => {
+			.then((posts) => {
 				res.status(200).json(posts);
 			})
-			.catch(err => console.log(err));
+			.catch((err) => console.log(err));
 	});
 };
 // exports.updatePost = (req, res, next) => {
@@ -216,7 +218,7 @@ exports.updatePost = (req, res, next) => {
 	form.parse(req, (err, fields, files) => {
 		if (err) {
 			return res.status(400).json({
-				error: "Photo could not be uploaded"
+				error: "Photo could not be uploaded",
 			});
 		}
 		// save post
@@ -232,7 +234,7 @@ exports.updatePost = (req, res, next) => {
 		post.save((err, result) => {
 			if (err) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			}
 			res.json(post);
@@ -245,11 +247,11 @@ exports.deletePost = (req, res) => {
 	post.remove((err, post) => {
 		if (err) {
 			return res.status(400).json({
-				error: err
+				error: err,
 			});
 		}
 		res.json({
-			message: "Post deleted successfully"
+			message: "Post deleted successfully",
 		});
 	});
 };
@@ -276,7 +278,7 @@ exports.like = (req, res) => {
 	).exec((err, result) => {
 		if (err) {
 			return res.status(400).json({
-				error: err
+				error: err,
 			});
 		} else {
 			res.json(result);
@@ -292,7 +294,7 @@ exports.unlike = (req, res) => {
 	).exec((err, result) => {
 		if (err) {
 			return res.status(400).json({
-				error: err
+				error: err,
 			});
 		} else {
 			res.json(result);
@@ -314,7 +316,7 @@ exports.comment = (req, res) => {
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			} else {
 				res.json(result);
@@ -335,7 +337,7 @@ exports.uncomment = (req, res) => {
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			} else {
 				res.json(result);
@@ -372,11 +374,11 @@ exports.updateComment = (req, res) => {
 	let comment = req.body.comment;
 
 	Post.findByIdAndUpdate(req.body.postId, {
-		$pull: { comments: { _id: comment._id } }
+		$pull: { comments: { _id: comment._id } },
 	}).exec((err, result) => {
 		if (err) {
 			return res.status(400).json({
-				error: err
+				error: err,
 			});
 		} else {
 			Post.findByIdAndUpdate(
@@ -389,7 +391,7 @@ exports.updateComment = (req, res) => {
 				.exec((err, result) => {
 					if (err) {
 						return res.status(400).json({
-							error: err
+							error: err,
 						});
 					} else {
 						res.json(result);

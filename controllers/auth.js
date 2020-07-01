@@ -10,7 +10,7 @@ exports.signup = async (req, res) => {
 	const userExists = await User.findOne({ email: req.body.email });
 	if (userExists)
 		return res.status(403).json({
-			error: "Email is taken!"
+			error: "Email is already in use !",
 		});
 	const user = await new User(req.body);
 	await user.save();
@@ -25,14 +25,14 @@ exports.signin = (req, res) => {
 		// if err or no user
 		if (err || !user) {
 			return res.status(401).json({
-				error: "User with that email does not exist. Please signup."
+				error: "User with that email does not exist. Please signup.",
 			});
 		}
 		// if user is found make sure the email and password match
 		// create authenticate method in model and use here
 		if (!user.authenticate(password)) {
 			return res.status(401).json({
-				error: "Email and password do not match"
+				error: "Email and password do not match",
 			});
 		}
 		// generate a token with user id and secret
@@ -43,8 +43,8 @@ exports.signin = (req, res) => {
 		// persist the token as 't' in cookie with expiry date
 		res.cookie("t", token, { expire: new Date() + 9999 });
 		// retrun response with user and token to frontend client
-		const { _id, name, email, role } = user;
-		return res.json({ token, user: { _id, email, name, role } });
+		const { _id, name, role } = user;
+		return res.json({ token, user: { _id, name, role } });
 	});
 };
 
@@ -55,7 +55,7 @@ exports.signout = (req, res) => {
 
 exports.requireSignin = expressJwt({
 	secret: process.env.JWT_SECRET,
-	userProperty: "auth"
+	userProperty: "auth",
 });
 
 exports.forgotPassword = (req, res) => {
@@ -71,7 +71,7 @@ exports.forgotPassword = (req, res) => {
 		// if err or no user
 		if (err || !user)
 			return res.status("401").json({
-				error: "User with that email does not exist!"
+				error: "User with that email does not exist!",
 			});
 
 		// generate a token with user id and secret
@@ -86,7 +86,7 @@ exports.forgotPassword = (req, res) => {
 			to: email,
 			subject: "Password Reset Instructions",
 			text: `Please use the following link to reset your password: ${process.env.CLIENT_URL}/reset-password/${token}`,
-			html: `<p>Please use the following link to reset your password:</p> <p>${process.env.CLIENT_URL}/reset-password/${token}</p>`
+			html: `<p>Please use the following link to reset your password:</p> <p>${process.env.CLIENT_URL}/reset-password/${token}</p>`,
 		};
 
 		return user.updateOne({ resetPasswordLink: token }, (err, success) => {
@@ -95,7 +95,7 @@ exports.forgotPassword = (req, res) => {
 			} else {
 				sendEmail(emailData);
 				return res.status(200).json({
-					message: `Email has been sent to ${email}. Follow the instructions to reset your password.`
+					message: `Email has been sent to ${email}. Follow the instructions to reset your password.`,
 				});
 			}
 		});
@@ -115,12 +115,12 @@ exports.resetPassword = (req, res) => {
 		// if err or no user
 		if (err || !user)
 			return res.status("401").json({
-				error: "Invalid Link!"
+				error: "Invalid Link!",
 			});
 
 		const updatedFields = {
 			password: newPassword,
-			resetPasswordLink: ""
+			resetPasswordLink: "",
 		};
 
 		user = _.extend(user, updatedFields);
@@ -129,11 +129,11 @@ exports.resetPassword = (req, res) => {
 		user.save((err, result) => {
 			if (err) {
 				return res.status(400).json({
-					error: err
+					error: err,
 				});
 			}
 			res.json({
-				message: `Great! Now you can login with your new password.`
+				message: `Great! Now you can login with your new password.`,
 			});
 		});
 	});
@@ -145,7 +145,7 @@ exports.socialLogin = async (req, res) => {
 	const idToken = req.body.tokenId;
 	const ticket = await client.verifyIdToken({
 		idToken,
-		audience: process.env.REACT_APP_GOOGLE_CLIENT_ID
+		audience: process.env.REACT_APP_GOOGLE_CLIENT_ID,
 	});
 	// console.log('ticket', ticket);
 	const {
@@ -153,7 +153,7 @@ exports.socialLogin = async (req, res) => {
 		email,
 		name,
 		picture,
-		sub: googleid
+		sub: googleid,
 	} = ticket.getPayload();
 
 	if (email_verified) {

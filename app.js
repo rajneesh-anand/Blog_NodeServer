@@ -13,19 +13,22 @@ dotenv.config();
 
 mongoose
 	.connect(process.env.MONGO_URI, {
-		useNewUrlParser: true
+		useCreateIndex: true,
+		useNewUrlParser: true,
+		useUnifiedTopology: true,
+		useFindAndModify: false,
 	})
-	.then(() => console.log("DB Connected"));
+	.then(() => console.log("DB CONNECTED"));
 
-mongoose.connection.on("error", err => {
+mongoose.connection.on("error", (err) => {
 	console.log(`DB connection error: ${err.message}`);
 });
 
 app.use(express.static(path.join(__dirname, "public")));
 
 const corsOptions = {
-	//origin: "http://localhost:3000"
-	origin: "https://naukrilelo.herokuapp.com"
+	origin: "http://localhost:3000",
+	//origin: "https://naukrilelo.herokuapp.com"
 };
 app.options("*", cors());
 app.use(cors(corsOptions));
@@ -36,12 +39,13 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const categoryRoutes = require("./routes/category");
 const newsRoutes = require("./routes/news");
+const quizRoutes = require("./routes/quiz");
 // apiDocs
 app.get("/api", (req, res) => {
 	fs.readFile("docs/apiDocs.json", (err, data) => {
 		if (err) {
 			res.status(400).json({
-				error: err
+				error: err,
 			});
 		}
 		const docs = JSON.parse(data);
@@ -61,7 +65,8 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", newsRoutes);
-app.use(function(err, req, res, next) {
+app.use("/api", quizRoutes);
+app.use(function (err, req, res, next) {
 	if (err.name === "UnauthorizedError") {
 		res.status(401).json({ error: "Unauthorized!" });
 	}
@@ -69,5 +74,5 @@ app.use(function(err, req, res, next) {
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
-	console.log(`A Node Js API is listening on port: ${port}`);
+	console.log(`A Node Server API is listening on port: ${port}`);
 });
