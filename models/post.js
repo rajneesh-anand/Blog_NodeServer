@@ -1,21 +1,36 @@
-const mongoose = require('mongoose');
-const { ObjectId } = mongoose.Schema;
+const Mongoose = require('mongoose');
+const slug = require('mongoose-slug-generator');
+const { Schema } = Mongoose;
 
-const postSchema = new mongoose.Schema({
+
+const options = {
+  separator: '-',
+  lang: 'en',
+  truncate: 120
+};
+
+Mongoose.plugin(slug, options);
+
+const postSchema = new Schema({
     title: {
         type: String,
         required: true
     },
+    slug: { type: String, slug: 'title', unique: true },
     body: {
         type: String,
         required: true
     },
+    category: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category'
+      },
     photo: {
         data: Buffer,
         contenType: String
     },
     postedBy: {
-        type: ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User'
     },
     created: {
@@ -23,14 +38,15 @@ const postSchema = new mongoose.Schema({
         default: Date.now
     },
     updated: Date,
-    likes: [{ type: ObjectId, ref: 'User' }],
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     comments: [
         {
             text: String,
             created: { type: Date, default: Date.now },
-            postedBy: { type: ObjectId, ref: 'User' }
+            postedBy: { type: Schema.Types.ObjectId, ref: 'User' }
         }
     ]
 });
 
-module.exports = mongoose.model('Post', postSchema);
+
+module.exports = Mongoose.model('Post', postSchema);
